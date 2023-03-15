@@ -10,6 +10,9 @@
 #- https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source
 # - https://developer.hashicorp.com/vault/api-docs/auth/azure#jwt
 set -e
+set -x
+
+echo "$1"
 
 function error_exit() {
   echo "$1" 1>&2
@@ -21,12 +24,12 @@ function check_deps() {
 }
 
 function parse_input() {
-  eval "$(jq -r '@sh "export VM_IP_ADDRESS=\(.vm_ip_address)"')"
+  eval "$(jq -r '@sh "export VM_IP_ADDRESS=\(.vm_ip_address);export PRIVATE_KEY_PATH=\(.ssh_private_key_path)"')"
   if [[ -z "${VM_IP_ADDRESS}" ]]; then error_exit "vm_ip_address not provided"; fi
 }
 
 function obtain_access_token() {
-  ssh -o StrictHostKeyChecking=accept-new -l "adminuser" "${VM_IP_ADDRESS}" \
+  ssh -o StrictHostKeyChecking=accept-new -i "${PRIVATE_KEY_PATH}" -l "adminuser" "${VM_IP_ADDRESS}" \
   "curl -s -G -H 'Metadata:true' -d 'api-version=2018-02-01' -d 'resource=https://management.azure.com/' http://169.254.169.254/metadata/identity/oauth2/token"
 }
 
@@ -35,5 +38,7 @@ function obtain_access_token() {
 sleep 10
 
 check_deps
+echo "$1 $2"
 parse_input
+echo "$1 $2"
 obtain_access_token

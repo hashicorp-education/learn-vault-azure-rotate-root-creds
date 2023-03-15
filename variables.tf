@@ -12,3 +12,9 @@ variable "ssh_public_key_path" {
   description = "Path to an SSH public key which should be used for authentication"
   default     = "~/.ssh/id_rsa.pub"
 }
+
+variable "ssh_private_key_path" {
+  type        = string
+  description = "Path to an SSH private key which should be used for authentication"
+  default     = "~/.ssh/id_rsa"
+}

@@ -177,6 +177,7 @@ data "external" "access_token_jwt" {
   program = ["bash", "${path.root}/scripts/imds_access_token.sh"]
   query = {
     vm_ip_address = azurerm_public_ip.vault_azure_pub_ip.ip_address
+    ssh_private_key_path = var.ssh_private_key_path
   }
 
   depends_on = [azurerm_linux_virtual_machine.vault_azure_vm]
